@@ -3,3 +3,5 @@ error.log
 venv/
 fabfile.py
 .gitignore~
+.gitignore\~
+..gitignore.un~
