@@ -1,4 +1,4 @@
-.DB_Store
+.DS_Store
 error.log
 venv/
 fabfile.py
