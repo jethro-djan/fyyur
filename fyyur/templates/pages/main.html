@@ -64,9 +64,9 @@
                   aria-label="Search">
               </form>
               {% endif %}
-              {% if (request.endpoint == 'artists') or
-                (request.endpoint == 'search_artists') or
-                (request.endpoint == 'show_artist') %}
+              {% if (request.endpoint == 'pages.artists') or
+                (request.endpoint == 'pages.search_artists') or
+                (request.endpoint == 'pages.show_artist') %}
               <form class="search" method="post" action="/artists/search">
                 <input class="form-control"
                   type="search"

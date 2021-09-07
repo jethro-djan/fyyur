@@ -3,10 +3,11 @@
 #----------------------------------------------------------------------------#
 import json
 import dateutil.parser
-# import babel
+from babel import dates
 from flask import (
   render_template, request, Response, flash, redirect, url_for, Blueprint
 )
+from ..app import app
 
 import logging
 from logging import Formatter, FileHandler
@@ -22,17 +23,17 @@ from fyyur.models import Venue, Artist
 # Filters.
 #----------------------------------------------------------------------------#
 
-page = Blueprint('pages', __name__, template_folder='templates', url_prefix='/page')
+page = Blueprint('pages', __name__, template_folder='templates')
 
-# def format_datetime(value, format='medium'):
-#   date = dateutil.parser.parse(value)
-#   if format == 'full':
-#       format="EEEE MMMM, d, y 'at' h:mma"
-#   elif format == 'medium':
-#       format="EE MM, dd, y h:mma"
-#   return babel.dates.format_datetime(date, format, locale='en')
+def format_datetime(value, format='medium'):
+  date = dateutil.parser.parse(value)
+  if format == 'full':
+      format="EEEE MMMM, d, y 'at' h:mma"
+  elif format == 'medium':
+      format="EE MM, dd, y h:mma"
+  return dates.format_datetime(date, format, locale='en')
 
-# page.jinja_env.filters['datetime'] = format_datetime
+app.jinja_env.filters['datetime'] = format_datetime
 
 #----------------------------------------------------------------------------#
 # Controllers.
@@ -43,7 +44,6 @@ page = Blueprint('pages', __name__, template_folder='templates', url_prefix='/pa
 @page.route('/')
 def index():
   return render_template('pages/home.html')
-  # return 'Hi'
 
 @page.route('/venues')
 def venues():
@@ -212,7 +212,7 @@ def artists():
     "id": 6,
     "name": "The Wild Sax Band",
   }]
-  return render_template('page/artists.html', artists=data)
+  return render_template('pages/artists.html', artists=data)
 
 @page.route('/artists/search', methods=['POST'])
 def search_artists():
@@ -387,7 +387,7 @@ def shows():
     "artist_image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
     "start_time": "2035-04-15T20:00:00.000Z"
   }]
-  return render_template('page/shows.html', shows=data)
+  return render_template('pages/shows.html', shows=data)
 
 
 
