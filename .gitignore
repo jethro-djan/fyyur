@@ -7,3 +7,6 @@ fabfile.py
 ..gitignore.un~
 __pycache__
 .vscode/
+
+.fake
+.ionide
