@@ -12,6 +12,7 @@ from .forms import *
 
 # from fyyur.form import create_form
 from fyyur.models import Venue, Artist
+from fyyur.forms import ShowForm, VenueForm, ArtistForm
 
 form = Blueprint('forms', __name__, template_folder='templates')
 
