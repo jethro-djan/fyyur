@@ -4,8 +4,9 @@ from sqlalchemy.orm import backref
 db = SQLAlchemy()
 
 venue_profiles = db.Table('venue_profiles',
-    db.Column('venue_id', db.Integer, db.ForeignKey('artist.id'), primary_key=True),
-    db.Column('genre_id', db.Integer, db.ForeignKey('genre.id'), primary_key=True)
+    db.Column('venue_id', db.Integer, db.ForeignKey('venue.id')),
+    db.Column('genre_id', db.Integer, db.ForeignKey('genre.id')),
+    # db.UniqueConstraint('venue_id', 'genre_id')
 )
 
 class Venue(db.Model):
@@ -23,15 +24,14 @@ class Venue(db.Model):
     seeking_talent = db.Column(db.Boolean)
     seeking_description = db.Column(db.String(500))
 
-    # show_id = db.Column(db.Integer, db.ForeignKey('show.id'), nullable=False)
-    artists = db.relationship('Artist', backref='venue', lazy=True)
-    show = db.relationship('Show', backref='venue', uselist=False)
+    # one-to-many relationship between Venue and Show
+    shows = db.relationship('Show', backref='venue', lazy=True)
     genres = db.relationship('Genre', secondary=venue_profiles, lazy='subquery', backref=db.backref('venues', lazy=True))
     
 
 artist_profiles = db.Table('artist_profiles',
-    db.Column('artist_id', db.Integer, db.ForeignKey('artist.id'), primary_key=True),
-    db.Column('genre_id', db.Integer, db.ForeignKey('genre.id'), primary_key=True)
+    db.Column('artist_id', db.Integer, db.ForeignKey('artist.id')),
+    db.Column('genre_id', db.Integer, db.ForeignKey('genre.id')),
 )
 
 class Artist(db.Model):
@@ -48,7 +48,8 @@ class Artist(db.Model):
     seeking_venue = db.Column(db.Boolean)
     seeking_description = db.Column(db.String(500))
 
-    # venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), nullable=False)
+    # one-to-many relationship Artist and Show | artist.show
+    shows = db.relationship('Show', backref='artist', lazy=True)
 
     genres = db.relationship('Genre', secondary=artist_profiles, lazy='subquery', backref=db.backref('artists', lazy=True))
 
@@ -68,12 +69,12 @@ class Show(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     start_time = db.Column(db.DateTime, nullable=False)
-    # future_show = db.Column(db.Boolean, nullable=False, default=True)
 
+    # one-to-many relationship with show as child | artist.show
+    artist_id = db.Column(db.Integer, db.ForeignKey('artist.id'), nullable=False)
+
+    # one-to-many relationship with Venue | venue.show
     venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), nullable=False)
-    artist_id = db.Column(db.Integer, db.ForeignKey('artist.id'))
-
-    artist = db.relationship('Artist')
 
 
 

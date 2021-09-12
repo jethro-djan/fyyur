@@ -6,7 +6,7 @@ from flask import (
 )
 
 import logging
-from logging import Formatter, FileHandler
+from logging import Formatter, FileHandler, disable
 from .forms import *
 
 
@@ -16,9 +16,31 @@ from fyyur.forms import ShowForm, VenueForm, ArtistForm
 
 form = Blueprint('forms', __name__, template_folder='templates')
 
-@form.route('/venues/create', methods=['GET'])
+@form.route('/venues/create', methods=['GET', 'POST'])
 def create_venue_form():
   form = VenueForm()
+  if form.validate_on_submit():
+    name = Venue.query.filter_by(name=form.name.data).first()
+    if name is None:
+      name = Venue(name=form.name.data)
+      city = Venue(city=form.city.data)
+      state = Venue(state=form.state.data)
+      address = Venue(address=form.address.data)
+      phone = Venue(phone=form.phone.data)
+      if phone == '':
+        phone = None 
+      facebook_link = Venue(facebook_link=form.facebook_link.data)
+      if facebook_link == '':
+        facebook_link = None
+      image_link = Venue(image_link=form.image_link.data)
+      if image_link == '':
+        image_link = None 
+      genres = Venue(genres=form.genres.data)
+      seeking_talent = Venue(seeking_talent=form.seeking_talent.data)
+      # if seeking_talent == False:
+      #   form.seeking_description(disabled=True)
+      seeking_description = Venue(seeking_description=form.seeking_description.data)
+      
   return render_template('forms/new_venue.html', form=form)
 
 @form.route('/artists/<int:artist_id>/edit', methods=['GET'])
