@@ -6,9 +6,10 @@ from flask_moment import Moment
 
 app = Flask(__name__)
 app.config.from_object('fyyur.config')
-moment = Moment()
-migrate = Migrate()
+db.init_app(app)
+moment = Moment(app)
 moment.init_app(app)
+migrate = Migrate(app)
 migrate.init_app(app, db)
 from fyyur.views import pages, errors, forms
 app.register_blueprint(pages.page)

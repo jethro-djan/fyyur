@@ -85,7 +85,7 @@ def search_venues():
       "num_upcoming_shows": 0,
     }]
   }
-  return render_template('page/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
+  return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
 @page.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
@@ -169,7 +169,7 @@ def show_venue(venue_id):
     "upcoming_shows_count": 1,
   }
   data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
-  return render_template('page/show_venue.html', venue=data)
+  return render_template('pages/show_venue.html', venue=data)
 
 #  Create Venue
 #  ----------------------------------------------------------------
@@ -305,7 +305,7 @@ def show_artist(artist_id):
     "upcoming_shows_count": 3,
   }
   data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
-  return render_template('page/show_artist.html', artist=data)
+  return render_template('pages/show_artist.html', artist=data)
 
 #  Update
 #  ----------------------------------------------------------------
