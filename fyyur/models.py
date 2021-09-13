@@ -1,12 +1,14 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import backref
+from flask_marshmallow import Marshmallow
 
 db = SQLAlchemy()
+ma = Marshmallow()
 
 venue_profiles = db.Table('venue_profiles',
     db.Column('venue_id', db.Integer, db.ForeignKey('venue.id')),
     db.Column('genre_id', db.Integer, db.ForeignKey('genre.id')),
-    # db.UniqueConstraint('venue_id', 'genre_id')
+    db.UniqueConstraint('venue_id', 'genre_id'),
 )
 
 class Venue(db.Model):
@@ -26,12 +28,25 @@ class Venue(db.Model):
 
     # one-to-many relationship between Venue and Show
     shows = db.relationship('Show', backref='venue', lazy=True)
-    genres = db.relationship('Genre', secondary=venue_profiles, lazy='subquery', backref=db.backref('venues', lazy=True))
+
+    # many-to-many relationship between Venue and Genre
+    genres = db.relationship('Genre', secondary=venue_profiles, backref=db.backref('venue', lazy=True))
+
+# class VenueSchema(ma.SQLAlchemyAutoSchema):
+#     class Meta:
+#         model = Venue
+#         shows = ma.auto_field()
+
+# class VenueSchema(ma.SQLAlchemySchema):
+#     class Meta:
+#         model = Venue
+#         shows = ma.auto_field()
     
 
 artist_profiles = db.Table('artist_profiles',
     db.Column('artist_id', db.Integer, db.ForeignKey('artist.id')),
     db.Column('genre_id', db.Integer, db.ForeignKey('genre.id')),
+    db.UniqueConstraint('artist_id', 'genre_id')
 )
 
 class Artist(db.Model):

@@ -2,6 +2,7 @@
 # Imports
 #----------------------------------------------------------------------------#
 import json
+from datetime import datetime
 import dateutil.parser
 from babel import dates
 from flask import (
@@ -13,7 +14,7 @@ import logging
 from logging import Formatter, FileHandler
 
 # from fyyur.page import create_page
-from fyyur.models import Venue, Artist
+from fyyur.models import Venue, Artist, ma 
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -49,29 +50,55 @@ def index():
 def venues():
   # TODO: replace with real venues data.
   #       num_upcoming_shows should be aggregated based on number of upcoming shows per venue.
-  
-  data=[{
-    "city": "San Francisco",
-    "state": "CA",
-    "venues": [{
-      "id": 1,
-      "name": "The Musical Hop",
-      "num_upcoming_shows": 0,
-    }, {
-      "id": 3,
-      "name": "Park Square Live Music & Coffee",
-      "num_upcoming_shows": 1,
-    }]
-  }, {
-    "city": "New York",
-    "state": "NY",
-    "venues": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }]
-  return render_template('pages/venues.html', areas=data);
+  cities = ['San Francisco', 'New York']
+  # states = ['CA', 'NY']
+  # venue = Venue.query.filter_by(city=cities[0], state=states[0]).all()
+  # city = venue[0].city
+  # state = venue[0].state
+
+  data1 =[]
+  # venue_serializer = {}
+  # today = datetime(datetime.today().year, datetime.today().month, datetime.today().day, datetime.today().hour, datetime.today().minute)
+  today = datetime.utcnow()
+
+  for obj in cities:
+    venue_serializer = {}
+    vens = Venue.query.filter_by(city=obj).all()
+    for ven in vens:
+      venue_serializer['city'] = ven.city
+      venue_serializer['state'] = ven.state
+      venue_serializer['venues'] = [{}]
+      venue_serializer['venues'][0]['id'] = ven.id
+      venue_serializer['venues'][0]['name'] = ven.name
+      # shows = list(filter(lambda show: show in [p for p in dir(show) if not callable(p)], venue.shows))
+      shows = len( list(filter(lambda show: today > show.start_time, ven.shows)) )
+      venue_serializer['venues'][0]['num_upcoming_shows'] = shows 
+    data1.append(venue_serializer)
+    # VenueSchema = ma.Schema.from_dict(data1)
+
+  # data=[{
+  #   "city": "San Francisco",
+  #   "state": "CA",
+  #   "venues": [{
+  #     "id": 1,
+  #     "name": "The Musical Hop",
+  #     "num_upcoming_shows": 0,
+  #   }, {
+  #     "id": 3,
+  #     "name": "Park Square Live Music & Coffee",
+  #     "num_upcoming_shows": 1,
+  #   }]
+  # }, {
+  #   "city": "New York",
+  #   "state": "NY",
+  #   "venues": [{
+  #     "id": 2,
+  #     "name": "The Dueling Pianos Bar",
+  #     "num_upcoming_shows": 0,
+  #   }]
+  # }]
+  # return render_template('pages/venues.html', areas=data);
+  return render_template('pages/venues.html', areas=data1);
 
 @page.route('/venues/search', methods=['POST'])
 def search_venues():
@@ -187,7 +214,7 @@ def create_venue_submission():
   # TODO: on unsuccessful db insert, flash an error instead.
   # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
   # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-  return render_template('page/home.html')
+  return render_template('pages/home.html')
 
 @page.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
